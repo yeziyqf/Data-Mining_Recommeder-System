@@ -11,14 +11,11 @@
 #include <fstream>
 #include <iostream>
 #include <functional>
-#include <thread>
 #include <boost/program_options.hpp>
 
 #include <limits.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/timeb.h>
-
 
 #include "similarity.hpp" /// create headers
 
@@ -158,6 +155,78 @@ struct compare_pair_second {
 	}
 };
 
+//typedef struct PACKED         //定义一个cpu occupy的结构体
+//{
+//    char name[20];      //定义一个char类型的数组名name有20个元素
+//    unsigned int user; //定义一个无符号的int类型的user
+//    unsigned int nice; //定义一个无符号的int类型的nice
+//    unsigned int system;//定义一个无符号的int类型的system
+//    unsigned int idle; //定义一个无符号的int类型的idle
+//}CPU_OCCUPY;
+//
+//typedef struct PACKED         //定义一个mem occupy的结构体
+//{
+//    char name[20];      //定义一个char类型的数组名name有20个元素
+//    unsigned long total;
+//    char name2[20];
+//    unsigned long free;
+//}MEM_OCCUPY;
+//
+//void get_memoccupy (MEM_OCCUPY *mem) //对无类型get函数含有一个形参结构体类弄的指针O
+//{
+//    FILE *fd;
+//    int n;
+//    char buff[256];
+//    MEM_OCCUPY *m;
+//    m=mem;
+//
+//    fd = fopen ("/proc/meminfo", "r");
+//
+//    fgets (buff, sizeof(buff), fd);
+//    fgets (buff, sizeof(buff), fd);
+//    fgets (buff, sizeof(buff), fd);
+//    fgets (buff, sizeof(buff), fd);
+//    sscanf (buff, "%s %u %s", m->name, &m->total, m->name2);
+//
+//    fgets (buff, sizeof(buff), fd); //从fd文件中读取长度为buff的字符串再存到起始地址为buff这个空间里
+//    sscanf (buff, "%s %u", m->name2, &m->free, m->name2);
+//
+//    fclose(fd);     //关闭文件fd
+//}
+//
+//int cal_cpuoccupy (CPU_OCCUPY *o, CPU_OCCUPY *n)
+//{
+//    unsigned long od, nd;
+//    unsigned long id, sd;
+//    int cpu_use = 0;
+//
+//    od = (unsigned long) (o->user + o->nice + o->system +o->idle);//第一次(用户+优先级+系统+空闲)的时间再赋给od
+//    nd = (unsigned long) (n->user + n->nice + n->system +n->idle);//第二次(用户+优先级+系统+空闲)的时间再赋给od
+//
+//    id = (unsigned long) (n->user - o->user);    //用户第一次和第二次的时间之差再赋给id
+//    sd = (unsigned long) (n->system - o->system);//系统第一次和第二次的时间之差再赋给sd
+//    if((nd-od) != 0)
+//        cpu_use = (int)((sd+id)*10000)/(nd-od); //((用户+系统)乖100)除(第一次和第二次的时间差)再赋给g_cpu_used
+//    else cpu_use = 0;
+//    //printf("cpu: %u\n",cpu_use);
+//    return cpu_use;
+//}
+//
+//void get_cpuoccupy (CPU_OCCUPY *cpust) //对无类型get函数含有一个形参结构体类弄的指针O
+//{
+//    FILE *fd;
+//    int n;
+//    char buff[256];
+//    CPU_OCCUPY *cpu_occupy;
+//    cpu_occupy=cpust;
+//
+//    fd = fopen ("/proc/stat", "r");
+//    fgets (buff, sizeof(buff), fd);
+//
+//    sscanf (buff, "%s %u %u %u %u", cpu_occupy->name, &cpu_occupy->user, &cpu_occupy->nice,&cpu_occupy->system, &cpu_occupy->idle);
+//
+//    fclose(fd);
+//}
 
 size_t get_executable_path( char* processdir,char* processname, size_t len)
 {
@@ -233,16 +302,11 @@ bool GetCpuMem(float &cpu,size_t &mem, int pid,int tid = -1)
     return ret;
 }
 
-long long getSystemTime() {
-    struct timeb t;
-    ftime(&t);
-    return 1000 * t.time + t.millitm;
-}
 
 int main (int argc, char *argv[]) {
     float cpu=0;
     size_t mem=0;
-//    size_t l_mem=0;
+    size_t l_mem=0;
     int pid=0;
     int tid=-1;
 
@@ -250,9 +314,7 @@ int main (int argc, char *argv[]) {
     char processname[1024];
     get_executable_path(path, processname, sizeof(path));
 //    printf("directory:%s\nprocessname:%s\n",path,processname);
-//    cerr << now() << "directory:%s\nprocessname:%s\n",path,processname;
-	auto n_core = thread::hardware_concurrency();//获取cpu核心个数
-	cerr << "Number of CPU core: " << n_core << endl;
+    cerr << now() << "directory:%s\nprocessname:%s\n",path,processname;
 
 	// Parameters
 	unsigned int num_users, num_items, nearest_neighbors, locality_param;
@@ -261,7 +323,7 @@ int main (int argc, char *argv[]) {
     pid = getpid();
     cerr << now() << " pid is:" << pid << endl;
     GetCpuMem( cpu, mem, pid, tid );
-    cerr << now() << " Before parsing, " << "CPU: " << cpu << " " << "MEM: " << mem << endl;
+    cerr << now() << "Before parsing, " << "CPU:" << cpu << " " << "MEM:" << mem << endl;
 
 
 
@@ -276,7 +338,7 @@ int main (int argc, char *argv[]) {
 	SparseXf ratings(num_users,num_items);
 	SparseXf targets(num_users,num_items);
 	try {
-//        cerr << now() << " directory:%s\nprocessname:%s\n",path,processname;
+        cerr << now() << "directory:%s\nprocessname:%s\n",path,processname;
 		size_t entries = 0;
 		std::vector<Triplet<rating_t> > triplets;
 
@@ -285,7 +347,7 @@ int main (int argc, char *argv[]) {
 		ratings.setFromTriplets(triplets.begin(), triplets.end());
 		cerr << entries << " entries loaded." << endl;
         GetCpuMem( cpu, mem, pid, tid );
-        cerr << now() << " After loading entries, " << "CPU: " << cpu << " " << "MEM: " << mem << endl;
+        cerr << now() << "After loading entries, " << "CPU:" << cpu << " " << "MEM:" << mem << endl;
 
 		triplets.clear();
 		cerr << now() << " Loading target user rating matrix... ";
@@ -293,7 +355,7 @@ int main (int argc, char *argv[]) {
 		targets.setFromTriplets(triplets.begin(), triplets.end());
 		cerr << entries << " entries loaded." << endl;
         GetCpuMem( cpu, mem, pid, tid );
-        cerr << now() << " After loading target user rating matrix, " << "CPU: " << cpu << " " << "MEM: " << mem << endl;
+        cerr << now() << "After loading target user rating matrix, " << "CPU:" << cpu << " " << "MEM:" << mem << endl;
 	} catch (string errmsg) {
 		cerr << "Error: " << errmsg << endl;
 		terminate();
@@ -312,60 +374,24 @@ int main (int argc, char *argv[]) {
 	cerr << now() << " Generating similarity measures..." << endl;
 	rating_t sim;
 	vector< pair<size_t, rating_t> > neighbors;
-	thread t1;
-
-	cerr << "Target outsize is: " << targets.outerSize() << endl;
-	cerr << "Rating outsize is: " << ratings.outerSize() << endl;
-    long long start,end,end_sim,end_push,end_sort,end_itend;
 	for (ptrdiff_t row=0; row < targets.outerSize(); ++row) {
 		for (ptrdiff_t k=0; k < ratings.outerSize(); ++k) {
-
-//			 cerr << row << ' ' << k << ' ' << targets.innerVector(row).nonZeros()
-//			  << ' ' <<  ratings.innerVector(k).nonZeros() << ' ' << sim << '\n';
-			if (targets.innerVector(row).nonZeros() &&
+			// cout << row << ' ' << k << ' ' << targets.innerVector(row).nonZeros()
+			//  << ' ' <<  ratings.innerVector(k).nonZeros() << ' ' << sim << '\n';
+			if (targets.innerVector(row).nonZeros() && 
 				ratings.innerVector(k).nonZeros()) {
-                if ((row == 10)&&(k == 10)) {
-                    start = getSystemTime();
-                }
-
-                innerVec tar = targets.innerVector(row), rat = ratings.innerVector(k);
-                if ((row == 10)&&(k == 10)) {
-                    GetCpuMem(cpu, mem, pid, tid);
-                    cerr << "Compute tar and rat: " << "CPU: " << cpu << " " << "MEM: " << mem;
-                    end = getSystemTime();
-                    cerr << " Time for computing tar and rat: " << end - start << "ms" << endl;
-                }
-
+				innerVec tar=targets.innerVector(row), rat=ratings.innerVector(k);
 				sim = cosine_sim(tar,rat,
 							 asymmetric_alpha, locality_param, supp_threshold);
-                if ((row == 10)&&(k == 10)) {
-                    GetCpuMem(cpu, mem, pid, tid);
-                    cerr << "Similarities: " << "CPU: " << cpu << " " << "MEM: " << mem;
-                    end_sim = getSystemTime();
-                    cerr << " Time for computing Similarities: " << end_sim - end << "ms" << endl;
-                }
 				if (sim > 0.0) {
-					neighbors.push_back(pair<size_t, float>(k,sim));
+					neighbors.push_back(pair<size_t, float>(k,sim));	
 				}
-                if ((row == 10)&&(k == 10)) {
-                    GetCpuMem(cpu, mem, pid, tid);
-                    cerr << "For pushing back: " << "CPU: " << cpu << " " << "MEM: " << mem;
-                    end_push = getSystemTime();
-                    cerr << " Time for computing pushing back: " << end_push - end_sim << "ms" << endl;
-                }
 			}
 			// cout << row << ' ' << k << ' ' << targets.innerVector(row).nonZeros()
 			//  << ' ' <<  ratings.innerVector(k).nonZeros() << ' ' << sim << '\n';
 			// cout << targets.innerVector(row) << ratings.innerVector(k) << "\n\n";
 		}
-
 		sort(neighbors.begin(),neighbors.end(),compare_pair_second<greater>());
-        if (row == 10) {
-            GetCpuMem(cpu, mem, pid, tid);
-            cerr << "For Sorting: " << "CPU: " << cpu << " " << "MEM: " << mem;
-            end_sort = getSystemTime();
-            cerr << " Time for Sorting afterwards: " << end_sort - end_push << "ms" << endl;
-        }
 		auto itend = (nearest_neighbors && nearest_neighbors < neighbors.size())?
 			neighbors.begin()+nearest_neighbors : neighbors.end();
 		for(auto kv = neighbors.begin(); kv != itend; ++kv) {
@@ -374,10 +400,9 @@ int main (int argc, char *argv[]) {
 			}
 		}
         if (row == 10) {
-            GetCpuMem(cpu, mem, pid, tid);
-            cerr << "For compute itend and check: " << "CPU: " << cpu << " " << "MEM: " << mem;
-            end_itend = getSystemTime();
-            cerr << " Time for itend and check: " << end_itend - end_sort << "ms" << endl;
+            GetCpuMem( cpu, mem, pid, tid );
+            cerr << now() << "Similarity " << row << "st round, "
+                 << "CPU:" << cpu << " " << "MEM:" << mem << endl;
         }
 		neighbors.clear();
 	}
