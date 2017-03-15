@@ -1,0 +1,59 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module arules-rec</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>arules-rec</strong></big></big> (version 1.0)</font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/mamadoudiaby/These_work4_archives/collaborations/code/coderecsys/apriori/arules-rec.py">/Users/mamadoudiaby/These_work4_archives/collaborations/code/coderecsys/apriori/arules-rec.py</a></font></td></tr></table>
+    <p><tt>Generate&nbsp;recommendations&nbsp;using&nbsp;association-rule&nbsp;confidence&nbsp;matrix<br>
+Inputs:<br>
+&nbsp;--&nbsp;List&nbsp;of&nbsp;owned&nbsp;items&nbsp;per&nbsp;user.&nbsp;Format:&nbsp;user&nbsp;item1&nbsp;...&nbsp;itemK<br>
+&nbsp;--&nbsp;Length&nbsp;2&nbsp;association&nbsp;rules&nbsp;(confidence&nbsp;matrix).&nbsp;Format:&nbsp;item&nbsp;item&nbsp;confidence<br>
+&nbsp;--&nbsp;Target&nbsp;users&nbsp;list.&nbsp;Format:&nbsp;user<br>
+&nbsp;--&nbsp;Number&nbsp;of&nbsp;items&nbsp;to&nbsp;recommend&nbsp;K<br>
+Output:&nbsp;list&nbsp;of&nbsp;[K]&nbsp;recommendations&nbsp;for&nbsp;each&nbsp;user<br>
+&nbsp;<br>
+DB&nbsp;2014-04</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="argparse.html">argparse</a><br>
+<a href="datetime.html">datetime</a><br>
+</td><td width="25%" valign=top><a href="operator.html">operator</a><br>
+<a href="scipy.sparse.html">scipy.sparse</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-loadSparseMatrix"><strong>loadSparseMatrix</strong></a>(infile, dtype<font color="#909090">=&lt;type 'int'&gt;</font>, shape<font color="#909090">=None</font>)</dt><dd><tt>load&nbsp;sparse&nbsp;from&nbsp;path&nbsp;using&nbsp;pandas,&nbsp;return&nbsp;scipy&nbsp;coo_matrix</tt></dd></dl>
+ <dl><dt><a name="-recommend"><strong>recommend</strong></a>(owneditems, arules, limit_rec<font color="#909090">=0</font>, includeconf<font color="#909090">=False</font>)</dt><dd><tt>given&nbsp;a&nbsp;set&nbsp;of&nbsp;owned&nbsp;items&nbsp;and&nbsp;an&nbsp;association&nbsp;rule&nbsp;confidence&nbsp;matrix,&nbsp;recommend&nbsp;items</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>DEFAULT_CONF</strong> = 0.0<br>
+<strong>__author__</strong> = 'Daniel Bernardes, Mamadou Diaby, Raphael Fournier, Francoise Fogelman Soulie and Emmanuel Viennet'<br>
+<strong>__version__</strong> = '1.0'</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#7799ee">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Author</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#7799ee"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Daniel&nbsp;Bernardes,&nbsp;Mamadou&nbsp;Diaby,&nbsp;Raphael&nbsp;Fournier,&nbsp;Francoise&nbsp;Fogelman&nbsp;Soulie&nbsp;and&nbsp;Emmanuel&nbsp;Viennet</td></tr></table>
+</body></html>
