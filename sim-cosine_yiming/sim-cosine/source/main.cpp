@@ -482,13 +482,35 @@ int main (int argc, char *argv[]) {
 	cerr << "Rating outsize is: " << ratings.outerSize() << endl;
 //    long long start,end,end_sim,end_push,end_sort,end_itend;
 
-//	thread t1(compute_similarity, division, 1, &neighbors,
-//			ratings, targets, locality_param,
-//			asymmetric_alpha, supp_threshold, nearest_neighbors);
-//    t1.join();
+	std::thread t1(compute_similarity, division, 1, std::ref(neighbors),
+			ratings, targets, locality_param,
+			  asymmetric_alpha, supp_threshold, nearest_neighbors);
+	std::thread t2(compute_similarity, division, 2, std::ref(neighbors),
+				   ratings, targets, locality_param,
+				   asymmetric_alpha, supp_threshold, nearest_neighbors);
+	std::thread t3(compute_similarity, division, 3, std::ref(neighbors),
+				   ratings, targets, locality_param,
+				   asymmetric_alpha, supp_threshold, nearest_neighbors);
+	std::thread t4(compute_similarity, division, 4, std::ref(neighbors),
+				   ratings, targets, locality_param,
+				   asymmetric_alpha, supp_threshold, nearest_neighbors);
+	std::thread t5(compute_similarity, division, 5, std::ref(neighbors),
+				   ratings, targets, locality_param,
+				   asymmetric_alpha, supp_threshold, nearest_neighbors);
+//	std::thread t6(compute_similarity, division, 0, std::ref(neighbors),
+//				   ratings, targets, locality_param,
+//				   asymmetric_alpha, supp_threshold, nearest_neighbors);
+    t1.join();
+	t2.join();
+	t3.join();
+	t4.join();
+	t5.join();
+//	t6.join();
 
-	compute_similarity(division, 1, neighbors, ratings, targets, locality_param,
-					   asymmetric_alpha,supp_threshold,nearest_neighbors);
+
+
+//	compute_similarity(division, 1, neighbors, ratings, targets, locality_param,
+//					   asymmetric_alpha,supp_threshold,nearest_neighbors);
 	printResult(neighbors, nearest_neighbors);
 
 
