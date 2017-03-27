@@ -386,8 +386,10 @@ void printResult(multimap<size_t,itemS> &neighbors, unsigned int nearest_neighbo
 
 	//Multimap_vector output.
 	for (int i = 0; i != itend_int; ++i) {
-		cout << neighbors_vec[i].first << ' ' << neighbors_vec[i].second.otherItem
-			 << ' ' << neighbors_vec[i].second.score << endl;
+		if (neighbors_vec[i].first != neighbors_vec[i].second.otherItem){
+			cout << neighbors_vec[i].first << ' ' << neighbors_vec[i].second.otherItem
+				 << ' ' << neighbors_vec[i].second.score << endl;
+		}
 	}
 
 //	if (row == 10) {
@@ -480,7 +482,7 @@ int main (int argc, char *argv[]) {
 	cerr << "Rating outsize is: " << ratings.outerSize() << endl;
 //    long long start,end,end_sim,end_push,end_sort,end_itend;
 
-//	thread t1(compute_similarity, division, 1, neighbors,
+//	thread t1(compute_similarity, division, 1, &neighbors,
 //			ratings, targets, locality_param,
 //			asymmetric_alpha, supp_threshold, nearest_neighbors);
 //    t1.join();
