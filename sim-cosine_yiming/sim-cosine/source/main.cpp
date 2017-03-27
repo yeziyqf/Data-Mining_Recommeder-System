@@ -358,10 +358,14 @@ void printResult(multimap<size_t,itemS> &neighbors, unsigned int nearest_neighbo
 
 //	auto itend = (nearest_neighbors && nearest_neighbors < neighbors.size())?
 //				 neighbors.begin()+nearest_neighbors : neighbors.end();
+	int itend_int = (nearest_neighbors && nearest_neighbors < neighbors.size())?
+					nearest_neighbors : neighbors.size();
+	cerr << "nearest neighbour is:" << nearest_neighbors << endl;
+	cerr << "itend_int is: " << itend_int << endl;
 //	for(auto kv = neighbors.begin(); kv != itend; ++kv) {
-
+//
 //	//Waiting to limit the output to nearest neighbors
-//	for(auto kv = neighbors.begin(); kv != neighbors.end(); ++kv) {
+////	for(auto kv = neighbors.begin(); kv != neighbors.end(); ++kv) {
 ////		if (row != (long)kv->first) {
 //			cout << neighbors->first.first << ' ' << neighbors->second.first << ' ' << neighbors->second.second << '\n';
 ////		}
@@ -379,7 +383,9 @@ void printResult(multimap<size_t,itemS> &neighbors, unsigned int nearest_neighbo
 //		}
 //
 //	}
-	for (int i = 0; i != neighbors_vec.size(); ++i) {
+
+	//Multimap_vector output.
+	for (int i = 0; i != itend_int; ++i) {
 		cout << neighbors_vec[i].first << ' ' << neighbors_vec[i].second.otherItem
 			 << ' ' << neighbors_vec[i].second.score << endl;
 	}
