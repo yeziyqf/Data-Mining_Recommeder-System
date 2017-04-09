@@ -41,6 +41,14 @@ typedef struct itemstruct
 
 typedef pair<size_t, itemS> PAIR;
 
+//variable needed for time specification.
+float cpu=0;
+size_t mem=0;
+//    size_t l_mem=0;
+int pid=0;
+int tid=-1;
+long long start,end1,end_sim,end_push,end_sort,end_itend;
+
 /*
   Parse command line parameters
 */
@@ -282,7 +290,7 @@ void compute_similarity(int division, int group, multimap<size_t,itemS> &neighbo
 
 //	for (ptrdiff_t row=0; ((long(row % division) == long(group))&&(row < targets.outerSize())); ++row) {
     for (ptrdiff_t row=0; (row < targets.outerSize()); ++row) {
-
+//		cerr << " " << row << " ";
 //        cerr << "group is: " << group << ", division is: " << division << ", row % division is: " << row % division << endl;
 //        cerr << "type of row % division: " << typeid(row % division).name() << ", type of group: " << typeid(long(group)).name() << endl;
         if (long(row % division) == long(group)){
@@ -299,8 +307,8 @@ void compute_similarity(int division, int group, multimap<size_t,itemS> &neighbo
 //				if ((row == 10)&&(k == 10)) {
 //					GetCpuMem(cpu, mem, pid, tid);
 //					cerr << "Compute tar and rat: " << "CPU: " << cpu << " " << "MEM: " << mem;
-//					end = getSystemTime();
-//					cerr << " Time for computing tar and rat: " << end - start << "ms" << endl;
+//					end1 = getSystemTime();
+//					cerr << " Time for computing tar and rat: " << end1 - start << "ms" << endl;
 //				}
 
                     rating_t sim = cosine_sim(tar,rat,
@@ -310,7 +318,7 @@ void compute_similarity(int division, int group, multimap<size_t,itemS> &neighbo
 //					GetCpuMem(cpu, mem, pid, tid);
 //					cerr << "Similarities: " << "CPU: " << cpu << " " << "MEM: " << mem;
 //					end_sim = getSystemTime();
-//					cerr << " Time for computing Similarities: " << end_sim - end << "ms" << endl;
+//					cerr << " Time for computing Similarities: " << end_sim - end1 << "ms" << endl;
 //				}
                     if (sim > 0.0) {
 //					pair<size_t,size_t> newpair(k,sim);
@@ -341,20 +349,23 @@ void compute_similarity(int division, int group, multimap<size_t,itemS> &neighbo
 
 //		neighbors.clear(); //for single threads.
 	}
+	cerr << endl << "Computing Similarity for group " << group << "Done." << endl;
 }
 
 
 void printResult(multimap<size_t,itemS> &neighbors, unsigned int nearest_neighbors){
 	//print the result.
+	cerr << "print result procedure." << endl;
     multimap<size_t,itemS>::iterator iter,iter1,iter2;
 	vector<PAIR> neighbors_vec(neighbors.begin(), neighbors.end());
+	cerr << "Vector copy finishes." << endl;
 	sort(neighbors_vec.begin(),neighbors_vec.end(),RankbyScore);
-//		if (row == 10) {
-//			GetCpuMem(cpu, mem, pid, tid);
-//			cerr << "For Sorting: " << "CPU: " << cpu << " " << "MEM: " << mem;
-//			end_sort = getSystemTime();
-//			cerr << " Time for Sorting afterwards: " << end_sort - end_push << "ms" << endl;
-//		}
+	cerr << "Sort done." << endl;
+
+//	GetCpuMem(cpu, mem, pid, tid);
+//	cerr << "For Sorting: " << "CPU: " << cpu << " " << "MEM: " << mem;
+//	end_sort = getSystemTime();
+//	cerr << " Time for Sorting afterwards: " << end_sort - end_push << "ms" << endl;
 
 //	auto itend = (nearest_neighbors && nearest_neighbors < neighbors.size())?
 //				 neighbors.begin()+nearest_neighbors : neighbors.end();
@@ -401,11 +412,7 @@ void printResult(multimap<size_t,itemS> &neighbors, unsigned int nearest_neighbo
 }
 
 int main (int argc, char *argv[]) {
-    float cpu=0;
-    size_t mem=0;
-//    size_t l_mem=0;
-    int pid=0;
-    int tid=-1;
+
 	int division = 6;
 	int group;
 
@@ -415,7 +422,7 @@ int main (int argc, char *argv[]) {
     get_executable_path(path, processname, sizeof(path));
 //    printf("directory:%s\nprocessname:%s\n",path,processname);
 //    cerr << now() << "directory:%s\nprocessname:%s\n",path,processname;
-	auto n_core = thread::hardware_concurrency();//获取cpu核心个数
+	auto n_core = thread::hardware_concurrency();//»ñÈ¡cpuºËÐÄ¸öÊý
 	cerr << "Number of CPU core: " << n_core << endl;
 
 	// Parameters
@@ -480,7 +487,6 @@ int main (int argc, char *argv[]) {
 
 	cerr << "Target outsize is: " << targets.outerSize() << endl;
 	cerr << "Rating outsize is: " << ratings.outerSize() << endl;
-//    long long start,end,end_sim,end_push,end_sort,end_itend;
 
 	std::thread t1(compute_similarity, division, 1, std::ref(neighbors),
 			ratings, targets, locality_param,
@@ -507,7 +513,7 @@ int main (int argc, char *argv[]) {
 	t5.join();
 //	t6.join();
 
-
+	cerr << now() << " Generating similarity measures done." << endl;
 
 //	compute_similarity(division, 1, neighbors, ratings, targets, locality_param,
 //					   asymmetric_alpha,supp_threshold,nearest_neighbors);
