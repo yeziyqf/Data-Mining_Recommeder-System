@@ -48,6 +48,10 @@ size_t mem=0;
 int pid=0;
 int tid=-1;
 long long start,end1,end_sim,end_push,end_sort,end_itend;
+multimap<size_t,itemS> neighbors1,neighbors2,neighbors3,
+		neighbors4,neighbors5,neighbors6;
+vector<PAIR> neighbors_vec1,neighbors_vec2,neighbors_vec3,
+		neighbors_vec4,neighbors_vec5,neighbors_vec6;
 
 /*
   Parse command line parameters
@@ -283,7 +287,7 @@ long long getSystemTime() {
     return 1000 * t.time + t.millitm;
 }
 
-void compute_similarity(int division, int group, multimap<size_t,itemS> &neighbors,
+void compute_similarity(int division, int group,
 						SparseXf ratings, SparseXf targets, unsigned locality_param,
 						float asymmetric_alpha, float supp_threshold, unsigned int nearest_neighbors){
 	cerr << "Computing Similarity......." << endl;
@@ -329,7 +333,26 @@ void compute_similarity(int division, int group, multimap<size_t,itemS> &neighbo
 
 //					itemS newpair(k,sim);
                         itemS newpair = {k,sim};
-                        neighbors.insert(make_pair(row,newpair));
+						if (group == 1){
+							neighbors1.insert(make_pair(row,newpair));
+						}
+						if (group == 2){
+							neighbors2.insert(make_pair(row,newpair));
+						}
+						if (group == 3){
+							neighbors3.insert(make_pair(row,newpair));
+						}
+						if (group == 4){
+							neighbors4.insert(make_pair(row,newpair));
+						}
+						if (group == 5){
+							neighbors5.insert(make_pair(row,newpair));
+						}
+						if (group == 0){
+							neighbors6.insert(make_pair(row,newpair));
+						}
+
+//                        neighbors.insert(make_pair(row,newpair));
                     }
 //				if ((row == 10)&&(k == 10)) {
 //					GetCpuMem(cpu, mem, pid, tid);
@@ -343,25 +366,59 @@ void compute_similarity(int division, int group, multimap<size_t,itemS> &neighbo
                 // cout << targets.innerVector(row) << ratings.innerVector(k) << "\n\n";
             }
 
-
-
+//			cerr << "Sort done." << endl;
         }
 
 //		neighbors.clear(); //for single threads.
 	}
+
+	if (group == 1){
+		vector<PAIR> neighbors_vec1(neighbors1.begin(), neighbors1.end());
+//				cerr << "Vector copy finishes." << endl;
+		sort(neighbors_vec1.begin(),neighbors_vec1.end(),RankbyScore);
+	}
+	if (group == 2){
+		vector<PAIR> neighbors_vec2(neighbors2.begin(), neighbors2.end());
+//				cerr << "Vector copy finishes." << endl;
+		sort(neighbors_vec2.begin(),neighbors_vec2.end(),RankbyScore);
+	}
+	if (group == 3){
+		vector<PAIR> neighbors_vec3(neighbors3.begin(), neighbors3.end());
+//				cerr << "Vector copy finishes." << endl;
+		sort(neighbors_vec3.begin(),neighbors_vec3.end(),RankbyScore);
+	}
+	if (group == 4){
+		vector<PAIR> neighbors_vec4(neighbors4.begin(), neighbors4.end());
+//				cerr << "Vector copy finishes." << endl;
+		sort(neighbors_vec4.begin(),neighbors_vec4.end(),RankbyScore);
+	}
+	if (group == 5){
+		vector<PAIR> neighbors_vec5(neighbors5.begin(), neighbors5.end());
+//				cerr << "Vector copy finishes." << endl;
+		sort(neighbors_vec5.begin(),neighbors_vec5.end(),RankbyScore);
+	}
+	if (group == 6){
+		vector<PAIR> neighbors_vec6(neighbors6.begin(), neighbors6.end());
+//				cerr << "Vector copy finishes." << endl;
+		sort(neighbors_vec6.begin(),neighbors_vec6.end(),RankbyScore);
+	}
+
 	cerr << endl << "Computing Similarity for group " << group << "Done." << endl;
+
+
 }
 
 
-void printResult(multimap<size_t,itemS> &neighbors, unsigned int nearest_neighbors){
+void printResult(unsigned int nearest_neighbors){
 	//print the result.
 	cerr << "print result procedure." << endl;
     multimap<size_t,itemS>::iterator iter,iter1,iter2;
-	vector<PAIR> neighbors_vec(neighbors.begin(), neighbors.end());
-	cerr << "Vector copy finishes." << endl;
-	sort(neighbors_vec.begin(),neighbors_vec.end(),RankbyScore);
-	cerr << "Sort done." << endl;
+//	vector<PAIR> neighbors_vec(neighbors.begin(), neighbors.end());
+//	cerr << "Vector copy finishes." << endl;
+//	sort(neighbors_vec.begin(),neighbors_vec.end(),RankbyScore);
+//	cerr << "Sort done." << endl;
 
+	
 //	GetCpuMem(cpu, mem, pid, tid);
 //	cerr << "For Sorting: " << "CPU: " << cpu << " " << "MEM: " << mem;
 //	end_sort = getSystemTime();
@@ -369,8 +426,10 @@ void printResult(multimap<size_t,itemS> &neighbors, unsigned int nearest_neighbo
 
 //	auto itend = (nearest_neighbors && nearest_neighbors < neighbors.size())?
 //				 neighbors.begin()+nearest_neighbors : neighbors.end();
-	int itend_int = (nearest_neighbors && nearest_neighbors < neighbors.size())?
-					nearest_neighbors : neighbors.size();
+	int neighbors_size_total = neighbors1.size() + neighbors2.size() + neighbors3.size()
+								+ neighbors4.size() + neighbors5.size() + neighbors6.size();
+	int itend_int = (nearest_neighbors && nearest_neighbors < neighbors_size_total)?
+					nearest_neighbors : neighbors_size_total;
 	cerr << "nearest neighbour is:" << nearest_neighbors << endl;
 	cerr << "itend_int is: " << itend_int << endl;
 //	for(auto kv = neighbors.begin(); kv != itend; ++kv) {
@@ -383,7 +442,7 @@ void printResult(multimap<size_t,itemS> &neighbors, unsigned int nearest_neighbo
 //	}
 
 
-	cerr << "the size of neighbor is: " << neighbors.size() << endl;
+	cerr << "the size of neighbor is: " << neighbors_size_total << endl;
 //	//Multimap output.
 //	for(iter = neighbors.begin(); iter != neighbors.end(); ++iter)
 //	{
@@ -394,14 +453,50 @@ void printResult(multimap<size_t,itemS> &neighbors, unsigned int nearest_neighbo
 //		}
 //
 //	}
-
+	itend_int = 100;
 	//Multimap_vector output.
 	for (int i = 0; i != itend_int; ++i) {
-		if (neighbors_vec[i].first != neighbors_vec[i].second.otherItem){
-			cout << neighbors_vec[i].first << ' ' << neighbors_vec[i].second.otherItem
-				 << ' ' << neighbors_vec[i].second.score << endl;
+		cerr << "hello " << i;
+		if (neighbors_vec1[i].first != neighbors_vec1[i].second.otherItem){
+			cerr << neighbors_vec1[i].first << ' ' << neighbors_vec1[i].second.otherItem
+				 << ' ' << neighbors_vec1[i].second.score << endl;
 		}
 	}
+	cerr << "1";
+	for (int i = 0; i != itend_int; ++i) {
+		if (neighbors_vec2[i].first != neighbors_vec2[i].second.otherItem){
+			cout << neighbors_vec2[i].first << ' ' << neighbors_vec2[i].second.otherItem
+				 << ' ' << neighbors_vec2[i].second.score << endl;
+		}
+	}
+	cerr << "1";
+	for (int i = 0; i != itend_int; ++i) {
+		if (neighbors_vec3[i].first != neighbors_vec3[i].second.otherItem){
+			cout << neighbors_vec3[i].first << ' ' << neighbors_vec3[i].second.otherItem
+				 << ' ' << neighbors_vec3[i].second.score << endl;
+		}
+	}
+	cerr << "1";
+	for (int i = 0; i != itend_int; ++i) {
+		if (neighbors_vec4[i].first != neighbors_vec4[i].second.otherItem){
+			cout << neighbors_vec4[i].first << ' ' << neighbors_vec4[i].second.otherItem
+				 << ' ' << neighbors_vec4[i].second.score << endl;
+		}
+	}
+	cerr << "1";
+	for (int i = 0; i != itend_int; ++i) {
+		if (neighbors_vec5[i].first != neighbors_vec5[i].second.otherItem){
+			cout << neighbors_vec5[i].first << ' ' << neighbors_vec5[i].second.otherItem
+				 << ' ' << neighbors_vec5[i].second.score << endl;
+		}
+	}
+	cerr << "1";
+//	for (int i = 0; i != itend_int; ++i) {
+//		if (neighbors_vec6[i].first != neighbors_vec6[i].second.otherItem){
+//			cout << neighbors_vec6[i].first << ' ' << neighbors_vec6[i].second.otherItem
+//				 << ' ' << neighbors_vec6[i].second.score << endl;
+//		}
+//	}
 
 //	if (row == 10) {
 //		GetCpuMem(cpu, mem, pid, tid);
@@ -422,7 +517,7 @@ int main (int argc, char *argv[]) {
     get_executable_path(path, processname, sizeof(path));
 //    printf("directory:%s\nprocessname:%s\n",path,processname);
 //    cerr << now() << "directory:%s\nprocessname:%s\n",path,processname;
-	auto n_core = thread::hardware_concurrency();//»ñÈ¡cpuºËÐÄ¸öÊý
+	auto n_core = thread::hardware_concurrency();//获取cpu核心个数
 	cerr << "Number of CPU core: " << n_core << endl;
 
 	// Parameters
@@ -483,24 +578,24 @@ int main (int argc, char *argv[]) {
 	cerr << now() << " Generating similarity measures..." << endl;
 //	rating_t sim;
 //	vector< pair<size_t, rating_t> > neighbors;
-	multimap<size_t,itemS> neighbors;
+
 
 	cerr << "Target outsize is: " << targets.outerSize() << endl;
 	cerr << "Rating outsize is: " << ratings.outerSize() << endl;
 
-	std::thread t1(compute_similarity, division, 1, std::ref(neighbors),
+	std::thread t1(compute_similarity, division, 1,
 			ratings, targets, locality_param,
 			  asymmetric_alpha, supp_threshold, nearest_neighbors);
-	std::thread t2(compute_similarity, division, 2, std::ref(neighbors),
+	std::thread t2(compute_similarity, division, 2,
 				   ratings, targets, locality_param,
 				   asymmetric_alpha, supp_threshold, nearest_neighbors);
-	std::thread t3(compute_similarity, division, 3, std::ref(neighbors),
+	std::thread t3(compute_similarity, division, 3,
 				   ratings, targets, locality_param,
 				   asymmetric_alpha, supp_threshold, nearest_neighbors);
-	std::thread t4(compute_similarity, division, 4, std::ref(neighbors),
+	std::thread t4(compute_similarity, division, 4,
 				   ratings, targets, locality_param,
 				   asymmetric_alpha, supp_threshold, nearest_neighbors);
-	std::thread t5(compute_similarity, division, 5, std::ref(neighbors),
+	std::thread t5(compute_similarity, division, 5,
 				   ratings, targets, locality_param,
 				   asymmetric_alpha, supp_threshold, nearest_neighbors);
 //	std::thread t6(compute_similarity, division, 0, std::ref(neighbors),
@@ -517,7 +612,7 @@ int main (int argc, char *argv[]) {
 
 //	compute_similarity(division, 1, neighbors, ratings, targets, locality_param,
 //					   asymmetric_alpha,supp_threshold,nearest_neighbors);
-	printResult(neighbors, nearest_neighbors);
+	printResult(nearest_neighbors);
 
 
 
